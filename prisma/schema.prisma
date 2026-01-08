@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+}
+
+model Product {
+  id          String    @id @default(uuid())
+  name        String
+  description String    @db.Text
+  price       Float
+  images      String[]  // Array of image URLs
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+  stock       Int       @default(0)
+  rating      Float     @default(0)
+  reviewCount Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  userId    String   @default("default-user") // Since no auth, using default user
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  userId        String      @default("default-user")
+  totalAmount   Float
+  shippingName  String
+  shippingAddress String    @db.Text
+  shippingCity  String
+  shippingState String
+  shippingZip   String
+  shippingPhone String
+  status        String      @default("pending") // pending, confirmed, shipped, delivered
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float    // Price at time of order
+  createdAt DateTime @default(now())
+}
+
+
