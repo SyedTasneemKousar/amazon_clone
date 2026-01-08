@@ -55,7 +55,20 @@ export default function ProductDetail({ productId }: ProductDetailProps) {
 
     try {
       await api.addToCart(product.id, quantity)
-      alert('Product added to cart!')
+      // Show success message
+      const button = document.querySelector('[data-testid="add-to-cart"]') as HTMLButtonElement
+      if (button) {
+        const originalText = button.textContent
+        button.textContent = '✓ Added to cart'
+        button.classList.add('bg-[#008296]', 'hover:bg-[#006c7d]', 'border-[#008296]')
+        button.classList.remove('bg-[#FFD814]', 'hover:bg-[#F7CA00]', 'border-[#FCD200]')
+        
+        setTimeout(() => {
+          button.textContent = originalText
+          button.classList.remove('bg-[#008296]', 'hover:bg-[#006c7d]', 'border-[#008296]')
+          button.classList.add('bg-[#FFD814]', 'hover:bg-[#F7CA00]', 'border-[#FCD200]')
+        }, 2000)
+      }
     } catch (error: any) {
       alert(error.message || 'Failed to add product to cart')
     }
@@ -195,7 +208,8 @@ export default function ProductDetail({ productId }: ProductDetailProps) {
               <button
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
-                className="flex-1 bg-[#FFD814] hover:bg-[#F7CA00] border border-[#FCD200] rounded-md py-2 text-sm font-normal text-[#0F1111] disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                data-testid="add-to-cart"
+                className="flex-1 bg-[#FFD814] hover:bg-[#F7CA00] border border-[#FCD200] rounded-md py-2 text-sm font-normal text-[#0F1111] disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
               >
                 <FiShoppingCart />
                 Add to Cart

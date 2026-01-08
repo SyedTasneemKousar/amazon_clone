@@ -29,8 +29,18 @@ export default function ProductCard({ product }: ProductCardProps) {
     
     try {
       await api.addToCart(product.id, 1)
-      alert('Product added to cart!')
-      window.location.reload()
+      // Show success message without reload
+      const button = e.currentTarget
+      const originalText = button.textContent
+      button.textContent = '✓ Added'
+      button.classList.add('bg-[#008296]', 'hover:bg-[#006c7d]', 'border-[#008296]')
+      button.classList.remove('bg-[#FFD814]', 'hover:bg-[#F7CA00]', 'border-[#FCD200]')
+      
+      setTimeout(() => {
+        button.textContent = originalText
+        button.classList.remove('bg-[#008296]', 'hover:bg-[#006c7d]', 'border-[#008296]')
+        button.classList.add('bg-[#FFD814]', 'hover:bg-[#F7CA00]', 'border-[#FCD200]')
+      }, 2000)
     } catch (error: any) {
       console.error('Error adding to cart:', error)
       alert(error.message || 'Failed to add product to cart')
